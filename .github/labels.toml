@@ -1,0 +1,79 @@
+["Attention: help wanted"]
+color = "ffff00"
+name = "Attention: help wanted"
+description = "[注目] 助けが必要"
+
+["Feedback: feature request"]
+color = "841adb"
+name = "Feedback: feature request"
+description = "[フィードバック] 新機能要求等"
+
+["Feedback: question"]
+color = "841adb"
+name = "Feedback: question"
+description = "[フィードバック] 質問"
+
+["Inactive: duplicate"]
+color = "d3d3d3"
+name = "Inactive: duplicate"
+description = "[未対応で放置・クローズ] 重複していた"
+
+["Inactive: invalid"]
+color = "d3d3d3"
+name = "Inactive: invalid"
+description = "[未対応で放置・クローズ] 正しくない/誤っている"
+
+["Inactive: wontfix"]
+color = "d3d3d3"
+name = "Inactive: wontfix"
+description = "[未対応で放置・クローズ] 対応しない"
+
+["Priority: high"]
+color = "ffc489"
+name = "Priority: high"
+description = "[（特別な）優先度] 高"
+
+["Priority: low"]
+color = "bcffff"
+name = "Priority: low"
+description = "[（特別な）優先度] 低"
+
+["Problem: bug"]
+color = "ff69b4"
+name = "Problem: bug"
+description = "[問題] バグ"
+
+["Problem: security"]
+color = "ff69b4"
+name = "Problem: security"
+description = "[問題] セキュリティ"
+
+["Status: done"]
+color = "f0ffff"
+name = "Status: done"
+description = "[状態] 作業完了し、レビュー・確認待ち"
+
+["Status: in progress"]
+color = "fffff0"
+name = "Status: in progress"
+description = "[状態] 着手中"
+
+["Status: pending"]
+color = "fff0f5"
+name = "Status: pending"
+description = "[状態] 何らかの理由で中断（解決後、作業再開する）"
+
+["Type: documentation"]
+color = "66cdaa"
+name = "Type: documentation"
+description = "[活動種別] ドキュメントに関して"
+
+["Type: improvement"]
+color = "66cdaa"
+name = "Type: improvement"
+description = "[活動種別] プロダクトの改善に関して"
+
+["Type: new feature"]
+color = "66cdaa"
+name = "Type: new feature"
+description = "[活動種別] プロダクトの新機能に関して"
