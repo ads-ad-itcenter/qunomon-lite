@@ -1,0 +1,13 @@
+version: '3'
+services:
+  develop:
+    command: sleep infinity  # run persistant
+    volumes:
+      ###
+      # Local cache for vscode server side directory (e.g. extensions data)
+      # see: https://code.visualstudio.com/docs/remote/containers-advanced#_avoiding-extension-reinstalls-on-container-rebuild
+      - vol-vscode-server-ext:/root/.vscode-server/extensions:cached
+      - vol-vscode-server-insiders-ext:/root/.vscode-server-insiders/extensions:cached
+volumes:
+  vol-vscode-server-ext:
+  vol-vscode-server-insiders-ext:

@@ -1,0 +1,17 @@
+version: '3'
+services:
+  develop:
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    tty: true
+    volumes:
+      - type: bind
+        source: ./
+        target: /work
+      # for DooD(Docker outside of Docker)
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+    env_file:
+      - .env
