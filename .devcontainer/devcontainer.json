@@ -1,0 +1,39 @@
+// See https://aka.ms/vscode-remote/devcontainer.json for format details.
+{
+  "name": "Remote-dev Project",
+  "dockerComposeFile": [
+    "../docker-compose.yml",
+    "docker-compose.extend.yml"
+  ],
+  "service": "develop",
+  "workspaceFolder": "/work",
+  "shutdownAction": "stopCompose", // or "none"
+  "settings": {
+    // Linting
+    "python.linting.enabled": true,
+    "python.linting.pylintEnabled": false,
+    "python.linting.flake8Enabled": true,
+    "python.linting.mypyEnabled": true,
+    // Formatting
+    "editor.formatOnPaste": true,
+    "editor.formatOnSave": true,
+    "python.formatting.provider": "black",
+    // Testing
+    "python.envFile": "${workspaceFolder}/.env",
+    "python.testing.pytestEnabled": true
+  },
+  "extensions": [
+    // Common
+    "sohamkamani.code-eol",
+    "mosapride.zenkaku",
+    "editorconfig.editorconfig",
+    "mutantdino.resourcemonitor",
+    // Doccumentation
+    // Git
+    "donjayamanne.githistory",
+    // Development for DockerFile, Compose file
+    "ms-azuretools.vscode-docker",
+    // Development for Python
+    "ms-python.python"
+  ]
+}
