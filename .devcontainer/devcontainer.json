@@ -29,6 +29,7 @@
     "editorconfig.editorconfig",
     "mutantdino.resourcemonitor",
     // Doccumentation
+    "shd101wyy.markdown-preview-enhanced",
     // Git
     "donjayamanne.githistory",
     // Development for DockerFile, Compose file
