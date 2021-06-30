@@ -15,8 +15,8 @@
     "python.linting.flake8Enabled": true,
     "python.linting.mypyEnabled": true,
     // Formatting
-    "editor.formatOnPaste": true,
-    "editor.formatOnSave": true,
+    "[python].editor.formatOnPaste": true,
+    "[python].editor.formatOnSave": true,
     "python.formatting.provider": "black",
     // Testing
     "python.envFile": "${workspaceFolder}/.env",

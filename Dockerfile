@@ -3,16 +3,16 @@ FROM library/python:3.9
 # basic tools
 RUN set -xe \
   && apt update && apt install -y \
-    wget \
-    curl \
-    less \
-    vim \
-    git \
+      wget \
+      curl \
+      less \
+      vim \
+      git \
   && apt clean
 
 # install docker(CLI)
 # refs: https://docs.docker.com/engine/install/debian/
-RUN  set -xe \
+RUN set -xe \
   && apt update && apt install -y \
       apt-transport-https \
       ca-certificates \
@@ -29,5 +29,7 @@ RUN  set -xe \
 
 # install python dependencies
 WORKDIR /work
-COPY requirements.txt /work
-RUN pip3 install --upgrade -r requirements.txt
+COPY setup.py setup.cfg requirements.txt ./
+# copy `src` directory for `pip install -e .` (at `requirements.txt`)
+COPY src/ ./src/
+RUN pip install -Ur requirements.txt

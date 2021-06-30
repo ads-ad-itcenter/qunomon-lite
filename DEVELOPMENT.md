@@ -18,21 +18,50 @@
 
 ## 開発の流れ（1例）
 
+* 環境
+  * docker
+    ```
+    docker run -it --rm --mount type=bind,src=${PWD},dst=/tmp/work --workdir /tmp/work library/python:3.9 bash
+    (container) #
 
-```
-$ pytest
+    ...
 
-$ flake8
+    (container) # exit
+    ```
+  * venv
+    ```
+    python -m venv .venv
 
-$ black . --check
-$ black . --diff
+    source .venv/bin/activate
 
-$ mypy .
-```
-or
-```
-$ tox
-```
+    (.venv) $
+
+    ...
+
+    (.venv) $ deactivate
+    ```
+
+* 開発対象パッケージ + 依存パッケージのインストール
+  ```
+  $ pip install -Ur requirements.txt
+  ```
+  * requirements.txt, setup.cfg(options.install_requires) を参照
+
+* テストなど
+  ```
+  $ pytest
+
+  $ flake8
+
+  $ black . --check
+  $ black . --diff
+
+  $ mypy .
+  ```
+  or
+  ```
+  $ tox
+  ```
 
 
 ## pip installして使ってみる
