@@ -7,7 +7,7 @@ services:
     tty: true
     volumes:
       - type: bind
-        source: ./
+        source: ${PWD}
         target: /work
       # for DooD(Docker outside of Docker)
       - type: bind

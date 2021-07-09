@@ -172,3 +172,18 @@
             ...
     ```
 
+```
+docker run \
+        --rm \
+        --mount type=bind,src=/home/hayashima/work/qunomon-lite/tests/data/input1/ait.input.json,dst=/usr/local/qai/ait.input.json,readonly \
+        --mount type=bind,src=/home/hayashima/work/qunomon-lite/tests/data/input1/model_1.h5,dst=/usr/local/qai/inventory/trained_model.h5,readonly \
+        --mount type=bind,src=/home/hayashima/work/qunomon-lite/tests/data/input1/t10k-images-idx3-ubyte.gz,dst=/usr/local/qai/inventory/test_set_images.gz,readonly \
+        --mount type=bind,src=/home/hayashima/work/qunomon-lite/tests/data/input1/t10k-labels-idx1-ubyte.gz,dst=/usr/local/qai/inventory/test_set_labels.gz,readonly \
+        --mount type=bind,src=/home/hayashima/work/qunomon-lite/output,dst=/usr/local/qai/mnt/ip/job_result \
+    qunomon/eval_mnist_acc_tf2.3:0.1 \
+        /usr/local/qai
+```
+
+```
+python -c "from qunomon_lite import AIT; AIT.run('qunomon/eval_mnist_acc_tf2.3:0.1').show()"
+```
