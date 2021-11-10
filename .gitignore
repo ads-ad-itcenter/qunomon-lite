@@ -6,3 +6,5 @@ htmlcov
 coverage.xml
 *.egg-info
 .venv*
+qunomon_lite_outputs
+_tmp_*

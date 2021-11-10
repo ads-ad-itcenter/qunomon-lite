@@ -1,0 +1,17 @@
+{
+  // Linting
+  "python.linting.enabled": true,
+  "python.linting.pylintEnabled": false,
+  "python.linting.flake8Enabled": true,
+  "python.linting.mypyEnabled": true,
+  "python.linting.lintOnSave": true,
+  // Formatting
+  "[python]": {
+    "editor.formatOnPaste": true,
+    "editor.formatOnSave": true
+  },
+  "python.formatting.provider": "black",
+  // Testing
+  "python.envFile": "${workspaceFolder}/.env",
+  "python.testing.pytestEnabled": true
+}
