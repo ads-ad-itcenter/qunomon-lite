@@ -7,5 +7,6 @@ coverage.xml
 *.egg-info
 .python-version
 .venv*
+.ipynb_checkpoints
 qunomon_lite_outputs
 _tmp_*
