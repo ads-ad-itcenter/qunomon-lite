@@ -5,6 +5,7 @@ htmlcov
 .coverage
 coverage.xml
 *.egg-info
+.python-version
 .venv*
 qunomon_lite_outputs
 _tmp_*

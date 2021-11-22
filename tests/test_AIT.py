@@ -1,9 +1,9 @@
-import qunomon_lite.AIT
+import qunomon_lite.ait
 import json
 
 
 def test_run():
-    assert qunomon_lite.AIT.run() == "Hello, func1"
+    assert qunomon_lite.ait.run() == "Hello, func1"
 
 
 class TestRunResult:
@@ -11,7 +11,7 @@ class TestRunResult:
         ait_output = json.loads(
             (shared_datadir / "output1/ait.output.json").read_text()
         )
-        run_result = qunomon_lite.AIT.RunResult(**ait_output)
+        run_result = qunomon_lite.ait.RunResult(**ait_output)
         actual = str(run_result)
         assert "{'AIT': {'Name': 'eval_mnist_acc_tf2.3', 'Version': '0.1'}" in actual
         assert "'ExecuteInfo': {'StartDateTime': '2021-05-10T17:38:14+0900'," in actual
@@ -25,7 +25,7 @@ class TestRunResult:
         ait_output = json.loads(
             (shared_datadir / "output1/ait.output.json").read_text()
         )
-        run_result = qunomon_lite.AIT.RunResult(**ait_output)
+        run_result = qunomon_lite.ait.RunResult(**ait_output)
         run_result.show()
         out, err = capfd.readouterr()
         assert "" == err
