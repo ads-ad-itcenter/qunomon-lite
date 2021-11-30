@@ -1,5 +1,5 @@
 import argparse
-from qunomon_lite import ait
+from . import ait
 
 
 class keyvalue(argparse.Action):
