@@ -44,7 +44,7 @@ class Result:
         return cls.from_run_id(cls._latest_run_id())
 
     def show(self) -> None:
-        ait_output = self.core.ait_output_json_dict
+        ait_output = self.core.ait_output_json_dict()
 
         console = Console()
 

@@ -3,6 +3,7 @@
 tox
 pytest
 pytest-datadir
+pytest-mock
 pytest-cov
 black
 flake8
