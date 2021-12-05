@@ -9,7 +9,10 @@ from pytest_mock import MockerFixture
 from qunomon_lite import ait_core
 
 
-def test__docker_run(shared_datadir: pathlib.Path, caplog: pytest.LogCaptureFixture):
+def test__docker_run(
+    shared_datadir: pathlib.Path,
+    caplog: pytest.LogCaptureFixture,
+):
     caplog.set_level(logging.INFO)
 
     ait_core._docker_run(
@@ -46,7 +49,9 @@ def test__docker_run(shared_datadir: pathlib.Path, caplog: pytest.LogCaptureFixt
     assert caplog.record_tuples[1] == ("test", logging.INFO, "hello")
 
 
-def test__docker_run_error(tmp_path: pathlib.Path):
+def test__docker_run_error(
+    tmp_path: pathlib.Path,
+):
     with pytest.raises(docker.errors.APIError):
         ait_core._docker_run(
             image_name="library/alpine:latest",
@@ -70,7 +75,13 @@ class TestAit:
             ("", "", "", "/:"),
         ],
     )
-    def test__make_image_name(self, name, repo, version, expected):
+    def test__make_image_name(
+        self,
+        name,
+        repo,
+        version,
+        expected,
+    ):
         ait = ait_core.Ait(name=name, repo=repo, version=version)
 
         assert ait._make_image_name() == expected
@@ -81,7 +92,11 @@ class TestAit:
             ("ait-repo/ait-name:ait-ver", ("ait-repo", "ait-name", "ait-ver")),
         ],
     )
-    def test_from_image_name(self, image_name, expected):
+    def test_from_image_name(
+        self,
+        image_name,
+        expected,
+    ):
         ait = ait_core.Ait.from_image_name(image_name)
 
         assert ait.repo == expected[0]
@@ -96,39 +111,56 @@ class TestAit:
             ("ait-name:ait-version"),
         ],
     )
-    def test_from_image_name_error(self, image_name):
+    def test_from_image_name_error(
+        self,
+        image_name,
+    ):
         with pytest.raises(IndexError):
             ait_core.Ait.from_image_name(image_name)
 
 
 class TestResult:
-    def test_init(self, shared_datadir: pathlib.Path):
-        r = ait_core.Result(output_base_dir_path=shared_datadir / "output1")
+    def test_init(
+        self,
+        shared_datadir: pathlib.Path,
+    ):
+        r = ait_core.Result(output_base_dir_path=shared_datadir / "output_dirs/output1")
         assert r.job_id == "-"
         assert r.run_id == "-"
-        assert r.output_base_dir_path == shared_datadir / "output1"
-        assert r.output_dir_path == shared_datadir / "output1/-/-"
-        assert r.ait_output_json_path == shared_datadir / "output1/-/-/ait.output.json"
+        assert r.output_base_dir_path == shared_datadir / "output_dirs/output1"
+        assert r.output_dir_path == shared_datadir / "output_dirs/output1/-/-"
+        assert (
+            r.ait_output_json_path
+            == shared_datadir / "output_dirs/output1/-/-/ait.output.json"
+        )
 
-    def test_ait_output_json_dict(self, shared_datadir: pathlib.Path):
+    def test_ait_output_json_dict(
+        self,
+        shared_datadir: pathlib.Path,
+    ):
         d = ait_core.Result(
-            output_base_dir_path=shared_datadir / "output1"
+            output_base_dir_path=shared_datadir / "output_dirs/output1"
         ).ait_output_json_dict()
         assert d["AIT"]["Name"] == "eval_mnist_acc_tf2.3"
-        assert d["ExecuteInfo"]["EndDateTime"] == "2021-12-01T01:13:52+0900"
+        assert d["ExecuteInfo"]["EndDateTime"] == "2021-11-22T18:17:55+0900"
         assert d["Result"]["Measures"][1]["Name"] == "Precision"
-        assert d["Result"]["Measures"][1]["Value"] == "0.06327693"
+        assert d["Result"]["Measures"][1]["Value"] == "0.06327692"
 
     @pytest.mark.parametrize(
         "output_base_dir_name, job_id, run_id",
         [
-            ("dummy", "-", "-"),
-            ("output1", "dummy", "-"),
-            ("output1", "-", "dummy"),
+            ("output_dirs/dummy", "-", "-"),
+            ("output_dirs/output1", "dummy", "-"),
+            ("output_dirs/output1", "-", "dummy"),
+            ("output_dirs/output2", "-", "-"),
         ],
     )
     def test_ait_output_json_dict_error(
-        self, shared_datadir: pathlib.Path, output_base_dir_name, job_id, run_id
+        self,
+        shared_datadir: pathlib.Path,
+        output_base_dir_name,
+        job_id,
+        run_id,
     ):
         with pytest.raises(FileNotFoundError):
             ait_core.Result(
@@ -140,7 +172,9 @@ class TestResult:
 
 class TestRunner:
     def test__get_logger_for_each_run(
-        self, caplog: pytest.LogCaptureFixture, tmp_path: pathlib.Path
+        self,
+        caplog: pytest.LogCaptureFixture,
+        tmp_path: pathlib.Path,
     ):
         a = ait_core.Runner(ait_core.Ait("name", "repo", "version"))
         logger = a._get_logger_for_each_run(tmp_path)
@@ -286,7 +320,10 @@ class TestRunner:
         }
 
     @pytest.mark.usefixtures("build_image_for_ait_stub")
-    def test_run(self, tmp_path: pathlib.Path):
+    def test_run(
+        self,
+        tmp_path: pathlib.Path,
+    ):
         runner = ait_core.Runner(
             ait=ait_core.Ait.from_image_name("qunomon-lite/ait-stub:latest"),
         )
@@ -298,7 +335,9 @@ class TestRunner:
 
     @pytest.mark.usefixtures("build_image_for_ait_stub")
     def test_run_with_inventories_and_params(
-        self, tmp_path: pathlib.Path, shared_datadir: pathlib.Path
+        self,
+        tmp_path: pathlib.Path,
+        shared_datadir: pathlib.Path,
     ):
         runner = ait_core.Runner(
             ait=ait_core.Ait.from_image_name("qunomon-lite/ait-stub:latest"),
@@ -333,7 +372,11 @@ class TestRunner:
         )
         assert r.ait_output_json_dict()["__inventory_sample__"] == "hello"
 
-    def test_run_with_full_option(self, tmp_path: pathlib.Path, mocker: MockerFixture):
+    def test_run_with_full_option(
+        self,
+        tmp_path: pathlib.Path,
+        mocker: MockerFixture,
+    ):
         runner = ait_core.Runner(
             ait=ait_core.Ait.from_image_name("repo/name:ver"),
             inventories={"i1": "iii1"},
@@ -386,7 +429,11 @@ class TestRunner:
         assert r.job_id == "job-id"
         assert r.run_id == "run-id"
 
-    def test_run_not_linux(self, tmp_path: pathlib.Path, mocker: MockerFixture):
+    def test_run_not_linux(
+        self,
+        tmp_path: pathlib.Path,
+        mocker: MockerFixture,
+    ):
         runner = ait_core.Runner(
             ait=ait_core.Ait.from_image_name("repo/name:ver"),
         )

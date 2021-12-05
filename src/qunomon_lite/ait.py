@@ -8,24 +8,35 @@ from rich.tree import Tree
 
 from . import ait_core, print_helper
 
+console = Console()
+
 OUTPUT_ROOT_DIR_PATH = pathlib.Path("qunomon_lite_outputs")
 
 
 class Result:
-    def __init__(self, run_id: str, core: ait_core.Result) -> None:
+    def __init__(
+        self,
+        run_id: str,
+        core: ait_core.Result,
+    ) -> None:
         self.run_id = run_id
         self.core = core
-        self.output_dir_path = core.output_base_dir_path
 
     @classmethod
-    def from_core(cls, core: ait_core.Result):
+    def from_core(
+        cls,
+        core: ait_core.Result,
+    ):
         return cls(
             run_id=core.output_base_dir_path.name,
             core=core,
         )
 
     @classmethod
-    def from_run_id(cls, run_id: str):
+    def from_run_id(
+        cls,
+        run_id: str,
+    ):
         return cls.from_core(
             ait_core.Result(
                 output_base_dir_path=OUTPUT_ROOT_DIR_PATH / run_id,
@@ -45,8 +56,6 @@ class Result:
 
     def show(self) -> None:
         ait_output = self.core.ait_output_json_dict()
-
-        console = Console()
 
         tree = Tree("[bold red]%s" % str(self.core.ait_output_json_path))
 
@@ -90,6 +99,14 @@ def result(
     return Result.from_run_id(run_id)
 
 
+def _generate_run_id() -> str:
+    # ex) '20210709-090432-981577_81b4fb44ed'
+    return "%s_%s" % (
+        datetime.datetime.now().strftime("%Y%m%d-%H%M%S-%f"),
+        secrets.token_hex(5),
+    )
+
+
 def run(
     ait: str,
     *,
@@ -97,16 +114,12 @@ def run(
     params: Dict[str, str] = {},
 ) -> Result:
 
-    console = Console()
     console.print("AIT: %s" % ait)
     console.print("inventories: ", inventories)
     console.print("params: ", params)
 
     # ex) '20210709-090432-981577_81b4fb44ed'
-    run_id = "%s_%s" % (
-        datetime.datetime.now().strftime("%Y%m%d-%H%M%S-%f"),
-        secrets.token_hex(5),
-    )
+    run_id = _generate_run_id()
 
     output_base_dir_path = OUTPUT_ROOT_DIR_PATH / run_id
     console.print("Output directory: ", output_base_dir_path)
@@ -124,6 +137,8 @@ def run(
         result = Result.from_core(_result)
 
     console.print("[bold]Finished! run-id: [red]", run_id)
-    console.print("See output directory for results: ", result.output_dir_path)
+    console.print(
+        "See output directory for results: ", result.core.output_base_dir_path
+    )
 
     return result

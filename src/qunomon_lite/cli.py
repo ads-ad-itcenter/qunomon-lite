@@ -1,9 +1,16 @@
 import argparse
+
 from . import ait
 
 
 class keyvalue(argparse.Action):
-    def __call__(self, parser, namespace, values, option_string=None):
+    def __call__(
+        self,
+        parser,
+        namespace,
+        values,
+        option_string=None,
+    ):
         setattr(namespace, self.dest, dict())
 
         for value in values:
@@ -34,7 +41,7 @@ def main():
 
 
 def run(args):
-    ait.run(args.ait, inventories=args.inventories, params=args.params)
+    ait.run(args.ait, inventories=args.inventories or {}, params=args.params or {})
 
 
 def result_show(args):

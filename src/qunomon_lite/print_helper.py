@@ -5,7 +5,10 @@ from rich.table import Table
 from rich.tree import Tree
 
 
-def tree_for_dict(tree: Tree, dict_obj: Dict[str, Union[str, dict]]) -> None:
+def tree_for_dict(
+    tree: Tree,
+    dict_obj: Dict[str, Union[str, dict]],
+) -> None:
     for k, v in dict_obj.items():
         if isinstance(v, dict):
             node = tree.add("[bold]%s[/]" % k)
@@ -14,7 +17,9 @@ def tree_for_dict(tree: Tree, dict_obj: Dict[str, Union[str, dict]]) -> None:
             node = tree.add("[bold]%s[/]: %s" % (k, v))
 
 
-def table_for_list_of_dict(list_of_dict_obj: List[dict]) -> Table:
+def table_for_list_of_dict(
+    list_of_dict_obj: List[dict],
+) -> Table:
     table = Table(
         show_edge=False,
         show_header=True,

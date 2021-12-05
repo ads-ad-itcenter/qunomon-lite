@@ -1,0 +1,121 @@
+{
+    "AIT": {
+        "Name": "eval_mnist_acc_tf2.3",
+        "Version": "0.1"
+    },
+    "ExecuteInfo": {
+        "StartDateTime": "2021-11-22T18:17:12+0900",
+        "EndDateTime": "2021-11-22T18:17:55+0900",
+        "MachineInfo": {
+            "cpu_brand": "AMD EPYC 7571",
+            "cpu_arch": "X86_64",
+            "cpu_clocks": "2.2000 GHz",
+            "cpu_cores": "4",
+            "memory_capacity": "16385515520"
+        }
+    },
+    "Result": {
+        "Measures": [
+            {
+                "Name": "Accuracy",
+                "Value": "0.81651"
+            },
+            {
+                "Name": "Precision",
+                "Value": "0.06327692"
+            },
+            {
+                "Name": "Recall",
+                "Value": "0.087357975"
+            },
+            {
+                "Name": "F−measure",
+                "Value": "0.073392554"
+            },
+            {
+                "Name": "AccuracyByClass",
+                "Value": "0.7738,0.8399,0.8602,0.8373,0.7884,0.695,0.8142,0.8256,0.8726,0.8581"
+            },
+            {
+                "Name": "PrecisionByClass",
+                "Value": "0.00616807,0.0701107,0.06635071,0.18869829,0.012048192,0.14224137,0.071428575,0.0479798,0.025316456,0.0024271845"
+            },
+            {
+                "Name": "RecallByClass",
+                "Value": "0.008163264,0.033480175,0.027131783,0.18514852,0.014256619,0.4809417,0.0782881,0.03696498,0.008213553,0.0009910803"
+            },
+            {
+                "Name": "F−measureByClass",
+                "Value": "0.007026742,0.045318976,0.038514405,0.1869065,0.0130596515,0.2195496,0.074701145,0.04175819,0.012403064,0.0014074184"
+            },
+            {
+                "Name": "AUC",
+                "Value": "0.4826190252735608"
+            }
+        ],
+        "Resources": [
+            {
+                "Name": "ConfusionMatrixHeatmap",
+                "Path": "/usr/local/qai/mnt/ip/job_result/-/-/resources/ConfusionMatrixHeatmap/confusion_matrix.png"
+            },
+            {
+                "Name": "ROC-curve",
+                "Path": "/usr/local/qai/mnt/ip/job_result/-/-/resources/ROC-curve/roc_curve.png"
+            },
+            {
+                "Name": "NGPredictImages",
+                "Path": "/usr/local/qai/mnt/ip/job_result/-/-/resources/NGPredictImages/ng_predict_actual_class_0.png"
+            },
+            {
+                "Name": "NGPredictImages",
+                "Path": "/usr/local/qai/mnt/ip/job_result/-/-/resources/NGPredictImages/ng_predict_actual_class_1.png"
+            },
+            {
+                "Name": "NGPredictImages",
+                "Path": "/usr/local/qai/mnt/ip/job_result/-/-/resources/NGPredictImages/ng_predict_actual_class_2.png"
+            },
+            {
+                "Name": "NGPredictImages",
+                "Path": "/usr/local/qai/mnt/ip/job_result/-/-/resources/NGPredictImages/ng_predict_actual_class_3.png"
+            },
+            {
+                "Name": "NGPredictImages",
+                "Path": "/usr/local/qai/mnt/ip/job_result/-/-/resources/NGPredictImages/ng_predict_actual_class_4.png"
+            },
+            {
+                "Name": "NGPredictImages",
+                "Path": "/usr/local/qai/mnt/ip/job_result/-/-/resources/NGPredictImages/ng_predict_actual_class_5.png"
+            },
+            {
+                "Name": "NGPredictImages",
+                "Path": "/usr/local/qai/mnt/ip/job_result/-/-/resources/NGPredictImages/ng_predict_actual_class_6.png"
+            },
+            {
+                "Name": "NGPredictImages",
+                "Path": "/usr/local/qai/mnt/ip/job_result/-/-/resources/NGPredictImages/ng_predict_actual_class_7.png"
+            },
+            {
+                "Name": "NGPredictImages",
+                "Path": "/usr/local/qai/mnt/ip/job_result/-/-/resources/NGPredictImages/ng_predict_actual_class_8.png"
+            },
+            {
+                "Name": "NGPredictImages",
+                "Path": "/usr/local/qai/mnt/ip/job_result/-/-/resources/NGPredictImages/ng_predict_actual_class_9.png"
+            }
+        ],
+        "Downloads": [
+            {
+                "Name": "ConfusionMatrixCSV",
+                "Path": "/usr/local/qai/mnt/ip/job_result/-/-/downloads/ConfusionMatrixCSV/confusion_matrix.csv"
+            },
+            {
+                "Name": "PredictionResult",
+                "Path": "/usr/local/qai/mnt/ip/job_result/-/-/downloads/PredictionResult/prediction.csv"
+            },
+            {
+                "Name": "Log",
+                "Path": "/usr/local/qai/mnt/ip/job_result/-/-/downloads/Log/ait.log"
+            }
+        ]
+    }
+}

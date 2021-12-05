@@ -9,11 +9,16 @@ import typing
 import docker
 
 
-def _load_json_file(path: pathlib.Path) -> typing.Dict[str, dict]:
+def _load_json_file(
+    path: pathlib.Path,
+) -> typing.Dict[str, dict]:
     return json.loads(path.read_bytes())
 
 
-def _save_json_file(data: typing.Dict[str, dict], path: pathlib.Path) -> None:
+def _save_json_file(
+    data: typing.Dict[str, dict],
+    path: pathlib.Path,
+) -> None:
     with open(str(path), mode="wt", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False)
 
@@ -72,16 +77,25 @@ class Ait:
         return "%s/%s:%s" % (self.repo, self.name, self.version)
 
     @classmethod
-    def from_image_name(cls, image_name: str):
+    def from_image_name(
+        cls,
+        image_name: str,
+    ):
         splited = re.split("(.*)/(.*):(.*)", image_name)
         return Ait(repo=splited[1], name=splited[2], version=splited[3])
 
     @classmethod
-    def from_manifest_url(cls, manifest_url: str):
+    def from_manifest_url(
+        cls,
+        manifest_url: str,
+    ):
         raise NotImplementedError  # TODO
 
     @classmethod
-    def from_manifest_path(cls, manifest_path: str):
+    def from_manifest_path(
+        cls,
+        manifest_path: str,
+    ):
         raise NotImplementedError  # TODO
 
 
@@ -115,7 +129,8 @@ class Runner:
         self.params = params
 
     def _get_logger_for_each_run(
-        self, output_base_dir_path: pathlib.Path
+        self,
+        output_base_dir_path: pathlib.Path,
     ) -> logging.Logger:
         logger = logging.getLogger(
             str(output_base_dir_path)

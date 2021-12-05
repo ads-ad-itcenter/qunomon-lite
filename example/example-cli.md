@@ -1,5 +1,5 @@
 ```sh
-$ qunomon_lite run qunomon/eval_mnist_acc_tf2.3:0.1 \
+$ qunomon-lite run qunomon/eval_mnist_acc_tf2.3:0.1 \
   --inventories \
     trained_model=data/model_1.h5 \
     test_set_images=data/t10k-images-idx3-ubyte.gz \
@@ -45,11 +45,11 @@ $ qunomon_lite run qunomon/eval_mnist_acc_tf2.3:0.1 \
   ```
 
 ```sh
-qunomon_lite result-show 20211201-011306-851862_7c7efdc45a
+qunomon-lite result-show 20211201-011306-851862_7c7efdc45a
 
 or
 
-qunomon_lite result-show latest
+qunomon-lite result-show latest
 ```
 
 * Output
