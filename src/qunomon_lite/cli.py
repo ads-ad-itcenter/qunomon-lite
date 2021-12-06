@@ -1,4 +1,5 @@
 import argparse
+import sys
 
 from . import ait
 
@@ -19,25 +20,30 @@ class keyvalue(argparse.Action):
 
 
 def main():
-    parser = argparse.ArgumentParser()
-    subparsers = parser.add_subparsers()
+    try:
+        parser = argparse.ArgumentParser()
+        subparsers = parser.add_subparsers()
 
-    parser_run = subparsers.add_parser("run", help="see `run -h`")
-    parser_run.add_argument("ait")
-    parser_run.add_argument("--inventories", nargs="*", action=keyvalue)
-    parser_run.add_argument("--params", nargs="*", action=keyvalue)
-    parser_run.set_defaults(handler=run)
+        parser_run = subparsers.add_parser("run", help="see `run -h`")
+        parser_run.add_argument("ait")
+        parser_run.add_argument("--inventories", nargs="*", action=keyvalue)
+        parser_run.add_argument("--params", nargs="*", action=keyvalue)
+        parser_run.set_defaults(handler=run)
 
-    parser_result_show = subparsers.add_parser("result-show", help="see `run -h`")
-    parser_result_show.add_argument("run_id")
-    parser_result_show.set_defaults(handler=result_show)
+        parser_result_show = subparsers.add_parser("result-show", help="see `run -h`")
+        parser_result_show.add_argument("run_id")
+        parser_result_show.set_defaults(handler=result_show)
 
-    args = parser.parse_args()
+        args = parser.parse_args()
 
-    if hasattr(args, "handler"):
-        args.handler(args)
-    else:
-        parser.print_help()
+        if hasattr(args, "handler"):
+            args.handler(args)
+        else:
+            parser.print_help()
+
+    except Exception as e:
+        print(e, file=sys.stderr)
+        sys.exit(1)
 
 
 def run(args):

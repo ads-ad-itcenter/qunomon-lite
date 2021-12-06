@@ -1,10 +1,13 @@
 import pathlib
+import re
 import sys
 import textwrap
 from typing import List
-from rich.console import Console
+
+import docker
 import pytest
 from pytest_mock import MockerFixture
+from rich.console import Console
 
 from qunomon_lite import ait, ait_core, cli
 
@@ -224,18 +227,18 @@ class TestSubCommandForRun:
         assert "[--params [PARAMS " in cap.err
         assert err_msg in cap.err
 
-    @pytest.mark.usefixtures("build_image_for_ait_stub")
     def test_main_run(
         self,
         mocker: MockerFixture,
         capsys: pytest.CaptureFixture,
         tmp_path: pathlib.Path,
+        ait_stub: str,
     ):
 
         mocker.patch.object(
             sys,
             "argv",
-            ["qunomon-lite", "run", "qunomon-lite/ait-stub:latest"],
+            ["qunomon-lite", "run", ait_stub],
         )
 
         mocker.patch.object(ait, "OUTPUT_ROOT_DIR_PATH", tmp_path)
@@ -248,13 +251,13 @@ class TestSubCommandForRun:
         assert "Finished! run-id: " in cap.out
         assert cap.err == ""
 
-    @pytest.mark.usefixtures("build_image_for_ait_stub")
     def test_main_run_full_option(
         self,
         mocker: MockerFixture,
         capsys: pytest.CaptureFixture,
         tmp_path: pathlib.Path,
         shared_datadir: pathlib.Path,
+        ait_stub: str,
     ):
 
         mocker.patch.object(
@@ -263,7 +266,7 @@ class TestSubCommandForRun:
             [
                 "qunomon-lite",
                 "run",
-                "qunomon-lite/ait-stub:latest",
+                ait_stub,
                 "--inventories",
                 "inventory_sample=%s" % str(shared_datadir.resolve() / "sample.txt"),
                 "--params",
@@ -304,6 +307,72 @@ class TestSubCommandForRun:
             ait_core._load_json_file(tmp_path / "run-id/ait.input.json")
             == ait_input_json_expected
         )
+
+    def test_main_run_execution_error(
+        self,
+        mocker: MockerFixture,
+        capsys: pytest.CaptureFixture,
+        tmp_path: pathlib.Path,
+        ait_stub_for_err: str,
+    ):
+
+        mocker.patch.object(
+            sys,
+            "argv",
+            ["qunomon-lite", "run", ait_stub_for_err],
+        )
+
+        mocker.patch.object(ait, "OUTPUT_ROOT_DIR_PATH", tmp_path)
+
+        with pytest.raises(SystemExit) as e:
+            cli.main()
+
+        assert e.value.code == 1
+
+        cap = capsys.readouterr()
+        assert (
+            "Running docker container (image: qunomon-lite/ait-stub-for-err:latest)"
+            in cap.out
+        )
+        assert "Finished! run-id: " not in cap.out
+
+        assert (
+            "AIT docker container running succeeded, "
+            + "but AIT execution error occured. "
+            + "Error Code: E901, Error Detail: Traceback (most recent call last):"
+            in cap.err
+        )
+
+    def test_main_run_docker_error(
+        self,
+        mocker: MockerFixture,
+        capsys: pytest.CaptureFixture,
+        tmp_path: pathlib.Path,
+    ):
+
+        mocker.patch.object(
+            sys,
+            "argv",
+            ["qunomon-lite", "run", "repo/name:ver"],
+        )
+
+        mocker.patch.object(ait, "OUTPUT_ROOT_DIR_PATH", tmp_path)
+        mocker.patch.object(
+            ait_core.Runner,
+            "_docker_run",
+            side_effect=docker.errors.APIError("dummy docker api error"),
+        )
+
+        with pytest.raises(SystemExit) as e:
+            cli.main()
+
+        assert e.value.code == 1
+
+        cap = capsys.readouterr()
+        assert "Running docker container (image: repo/name:ver)" in cap.out
+        assert "Finished! run-id: " not in cap.out
+
+        assert "dummy docker api error" in cap.err
 
 
 class TestSubCommandForResultShow:
@@ -424,11 +493,12 @@ class TestSubCommandForResultShow:
 
         cap = capsys.readouterr()
         assert (
-            str(shared_datadir.resolve() / "output_dirs/output3/-/-/ait.output.json")
+            str(shared_datadir.resolve() / "output_dirs/output4/-/-/ait.output.json")
             in cap.out
         )
         assert "Name: eval_mnist_acc_tf2.3" in cap.out
         assert "Version: 0.1" in cap.out
+        assert re.search(r"Accuracy\s+0.81652", cap.out)
         assert cap.err == ""
 
     def test_main_result_show_full_option(
@@ -456,4 +526,5 @@ class TestSubCommandForResultShow:
         )
         assert "Name: eval_mnist_acc_tf2.3" in cap.out
         assert "Version: 0.1" in cap.out
+        assert re.search(r"Accuracy\s+0.81651", cap.out)
         assert cap.err == ""

@@ -9,62 +9,6 @@ from pytest_mock import MockerFixture
 from qunomon_lite import ait_core
 
 
-def test__docker_run(
-    shared_datadir: pathlib.Path,
-    caplog: pytest.LogCaptureFixture,
-):
-    caplog.set_level(logging.INFO)
-
-    ait_core._docker_run(
-        image_name="library/alpine:latest",
-        command="cat /tmp/data/sample.txt",
-        volumes={
-            str(shared_datadir.resolve()): {
-                "bind": "/tmp/data",
-                "mode": "ro",
-            },
-        },
-    )
-    assert caplog.record_tuples[1] == (
-        "qunomon_lite.ait_core",
-        logging.INFO,
-        "hello",
-    )
-
-    caplog.clear()
-
-    logger = logging.getLogger("test")
-    ait_core._docker_run(
-        image_name="library/alpine:latest",
-        entrypoint="/bin/cat",
-        command="/tmp/data/sample.txt",
-        volumes={
-            str(shared_datadir.resolve()): {
-                "bind": "/tmp/data",
-                "mode": "ro",
-            },
-        },
-        custom_logger=logger,
-    )
-    assert caplog.record_tuples[1] == ("test", logging.INFO, "hello")
-
-
-def test__docker_run_error(
-    tmp_path: pathlib.Path,
-):
-    with pytest.raises(docker.errors.APIError):
-        ait_core._docker_run(
-            image_name="library/alpine:latest",
-            command="command",
-            volumes={
-                str(tmp_path.resolve()): {
-                    "bind": "/tmp/data",
-                    "mode": "---Illegal option---",
-                },
-            },
-        )
-
-
 class TestAit:
     @pytest.mark.parametrize(
         "repo,name,version,expected",
@@ -120,7 +64,7 @@ class TestAit:
 
 
 class TestResult:
-    def test_init(
+    def test_when_execution_succeeded(
         self,
         shared_datadir: pathlib.Path,
     ):
@@ -133,18 +77,15 @@ class TestResult:
             r.ait_output_json_path
             == shared_datadir / "output_dirs/output1/-/-/ait.output.json"
         )
-
-    def test_ait_output_json_dict(
-        self,
-        shared_datadir: pathlib.Path,
-    ):
-        d = ait_core.Result(
-            output_base_dir_path=shared_datadir / "output_dirs/output1"
-        ).ait_output_json_dict()
-        assert d["AIT"]["Name"] == "eval_mnist_acc_tf2.3"
-        assert d["ExecuteInfo"]["EndDateTime"] == "2021-11-22T18:17:55+0900"
-        assert d["Result"]["Measures"][1]["Name"] == "Precision"
-        assert d["Result"]["Measures"][1]["Value"] == "0.06327692"
+        assert r.ait_output_json_dict["AIT"]["Name"] == "eval_mnist_acc_tf2.3"
+        assert (
+            r.ait_output_json_dict["ExecuteInfo"]["EndDateTime"]
+            == "2021-11-22T18:17:55+0900"
+        )
+        assert r.ait_output_json_dict["Result"]["Measures"][1]["Name"] == "Precision"
+        assert r.ait_output_json_dict["Result"]["Measures"][1]["Value"] == "0.06327692"
+        assert r.execution_errors == {}
+        assert r.is_execution_succeeded is True
 
     @pytest.mark.parametrize(
         "output_base_dir_name, job_id, run_id",
@@ -155,22 +96,112 @@ class TestResult:
             ("output_dirs/output2", "-", "-"),
         ],
     )
-    def test_ait_output_json_dict_error(
+    def test_when_execution_failed_not_exist_output_json(
         self,
         shared_datadir: pathlib.Path,
         output_base_dir_name,
         job_id,
         run_id,
     ):
-        with pytest.raises(FileNotFoundError):
-            ait_core.Result(
-                output_base_dir_path=shared_datadir / output_base_dir_name,
-                job_id=job_id,
-                run_id=run_id,
-            ).ait_output_json_dict()
+        r = ait_core.Result(
+            output_base_dir_path=shared_datadir / output_base_dir_name,
+            job_id=job_id,
+            run_id=run_id,
+        )
+        assert r.ait_output_json_dict == {}
+        assert r.is_execution_succeeded is False
+        assert r.execution_errors == {}
+
+    def test_when_execution_failed_exist_output_json(
+        self,
+        shared_datadir: pathlib.Path,
+    ):
+        r = ait_core.Result(output_base_dir_path=shared_datadir / "output_dirs/output3")
+        assert r.ait_output_json_dict["AIT"]["Name"] == "eval_mnist_acc_tf2.3"
+        assert r.is_execution_succeeded is False
+        assert r.execution_errors["Code"] == "E901"
+        assert "Traceback (most recent call last):" in r.execution_errors["Detail"]
+
+
+class TestAitExecutionError:
+    def test___str__(self):
+        e = ait_core.AitExecutionError("error messages")
+        assert str(e) == (
+            "AIT docker container running succeeded, "
+            + "but AIT execution error occured. error messages"
+        )
+
+    def test_from_result(
+        self,
+        shared_datadir: pathlib.Path,
+    ):
+        r = ait_core.Result(output_base_dir_path=shared_datadir / "output_dirs/output3")
+        e = ait_core.AitExecutionError.from_result(r)
+        assert r.execution_errors["Code"] == "E901"
+        assert "Traceback (most recent call last):" in r.execution_errors["Detail"]
+        assert (
+            "Error Code: E901, Error Detail: Traceback (most recent call last):"
+            in e.message
+        )
 
 
 class TestRunner:
+    def test__docker_run(
+        self,
+        shared_datadir: pathlib.Path,
+        caplog: pytest.LogCaptureFixture,
+    ):
+        caplog.set_level(logging.INFO)
+
+        ait_core.Runner._docker_run(
+            image_name="library/alpine:latest",
+            command="cat /tmp/data/sample.txt",
+            volumes={
+                str(shared_datadir.resolve()): {
+                    "bind": "/tmp/data",
+                    "mode": "ro",
+                },
+            },
+        )
+        assert caplog.record_tuples[1] == (
+            "qunomon_lite.ait_core",
+            logging.INFO,
+            "hello",
+        )
+
+        caplog.clear()
+
+        logger = logging.getLogger("test")
+        ait_core.Runner._docker_run(
+            image_name="library/alpine:latest",
+            entrypoint="/bin/cat",
+            command="/tmp/data/sample.txt",
+            volumes={
+                str(shared_datadir.resolve()): {
+                    "bind": "/tmp/data",
+                    "mode": "ro",
+                },
+            },
+            custom_logger=logger,
+        )
+        assert caplog.record_tuples[1] == ("test", logging.INFO, "hello")
+
+    def test__docker_run_error(
+        self,
+        tmp_path: pathlib.Path,
+    ):
+        with pytest.raises(docker.errors.APIError):
+            ait_core.Runner._docker_run(
+                image_name="library/alpine:latest",
+                command="command",
+                volumes={
+                    str(tmp_path.resolve()): {
+                        "bind": "/tmp/data",
+                        "mode": "---Illegal option---",
+                    },
+                },
+            )
+
     def test__get_logger_for_each_run(
         self,
         caplog: pytest.LogCaptureFixture,
@@ -319,28 +350,28 @@ class TestRunner:
             },
         }
 
-    @pytest.mark.usefixtures("build_image_for_ait_stub")
     def test_run(
         self,
         tmp_path: pathlib.Path,
+        ait_stub: str,
     ):
         runner = ait_core.Runner(
-            ait=ait_core.Ait.from_image_name("qunomon-lite/ait-stub:latest"),
+            ait=ait_core.Ait.from_image_name(ait_stub),
         )
         r = runner.run(output_base_dir_path=tmp_path)
         assert r.output_base_dir_path == tmp_path
         assert r.job_id == "-"
         assert r.run_id == "-"
-        assert r.ait_output_json_dict()["__Args__"] == "/usr/local/qai"
+        assert r.ait_output_json_dict["__Args__"] == "/usr/local/qai"
 
-    @pytest.mark.usefixtures("build_image_for_ait_stub")
     def test_run_with_inventories_and_params(
         self,
         tmp_path: pathlib.Path,
         shared_datadir: pathlib.Path,
+        ait_stub: str,
     ):
         runner = ait_core.Runner(
-            ait=ait_core.Ait.from_image_name("qunomon-lite/ait-stub:latest"),
+            ait=ait_core.Ait.from_image_name(ait_stub),
             inventories={
                 "inventory_sample": str(shared_datadir.resolve() / "sample.txt")
             },
@@ -350,7 +381,7 @@ class TestRunner:
         assert r.output_base_dir_path == tmp_path
         assert r.job_id == "-"
         assert r.run_id == "-"
-        assert r.ait_output_json_dict()["__Args__"] == "/usr/local/qai"
+        assert r.ait_output_json_dict["__Args__"] == "/usr/local/qai"
         ait_input_json_expected = {
             "testbed_mount_volume_path": "/usr/local/qai/mnt",
             "job_id": "-",
@@ -365,12 +396,12 @@ class TestRunner:
                 {"Name": "p1", "Value": "ppp1"},
             ],
         }
-        assert r.ait_output_json_dict()["__ait.input.json__"] == ait_input_json_expected
+        assert r.ait_output_json_dict["__ait.input.json__"] == ait_input_json_expected
         assert (
             ait_core._load_json_file(tmp_path / "ait.input.json")
             == ait_input_json_expected
         )
-        assert r.ait_output_json_dict()["__inventory_sample__"] == "hello"
+        assert r.ait_output_json_dict["__inventory_sample__"] == "hello"
 
     def test_run_with_full_option(
         self,
@@ -382,7 +413,10 @@ class TestRunner:
             inventories={"i1": "iii1"},
             params={"p1": "ppp1"},
         )
-        m = mocker.patch.object(ait_core, "_docker_run")
+        m = mocker.patch.object(ait_core.Runner, "_docker_run")
+        mocker.patch.object(
+            ait_core.Result, "_is_execution_succeeded", return_value=True
+        )
         r = runner.run(output_base_dir_path=tmp_path, job_id="job-id", run_id="run-id")
 
         ait_input_json_expected = {
@@ -437,8 +471,45 @@ class TestRunner:
         runner = ait_core.Runner(
             ait=ait_core.Ait.from_image_name("repo/name:ver"),
         )
-        m = mocker.patch.object(ait_core, "_docker_run")
+        m = mocker.patch.object(ait_core.Runner, "_docker_run")
+        mocker.patch.object(
+            ait_core.Result, "_is_execution_succeeded", return_value=True
+        )
         mocker.patch.object(os, "name", "nt")
         runner.run(output_base_dir_path=tmp_path)
 
         assert m.call_count == 1
+
+    def test_run_execution_error(
+        self,
+        tmp_path: pathlib.Path,
+        ait_stub_for_err: str,
+    ):
+        runner = ait_core.Runner(
+            ait=ait_core.Ait.from_image_name(ait_stub_for_err),
+        )
+        with pytest.raises(ait_core.AitExecutionError) as e:
+            runner.run(output_base_dir_path=tmp_path)
+
+        assert (
+            "AIT docker container running succeeded, "
+            + "but AIT execution error occured. "
+            + "Error Code: E901, Error Detail: Traceback (most recent call last):"
+            in str(e.value)
+        )
+
+    def test_run_docker_error(
+        self,
+        tmp_path: pathlib.Path,
+        mocker: MockerFixture,
+    ):
+        runner = ait_core.Runner(
+            ait=ait_core.Ait.from_image_name("repo/name:ver"),
+        )
+        mocker.patch.object(
+            ait_core.Runner,
+            "_docker_run",
+            side_effect=docker.errors.APIError("dummy docker api error"),
+        )
+        with pytest.raises(docker.errors.APIError):
+            runner.run(output_base_dir_path=tmp_path)

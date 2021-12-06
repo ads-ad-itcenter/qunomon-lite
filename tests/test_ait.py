@@ -2,6 +2,7 @@ import pathlib
 import re
 from typing import List
 
+import docker
 import pytest
 from pytest_mock import MockerFixture
 
@@ -92,7 +93,7 @@ def test_result(
 
     r = ait.result()
 
-    assert r.run_id == "output3"
+    assert r.run_id == "output4"
 
     r = ait.result("output1")
 
@@ -103,33 +104,33 @@ def test__generate_run_id():
     assert re.match(r"^\d{8}-\d{6}-\d{6}_[0-9a-f]{10}$", ait._generate_run_id())
 
 
-@pytest.mark.usefixtures("build_image_for_ait_stub")
 def test_run(
     mocker: MockerFixture,
     tmp_path: pathlib.Path,
+    ait_stub: str,
 ):
     mocker.patch.object(ait, "OUTPUT_ROOT_DIR_PATH", tmp_path)
 
-    r = ait.run("qunomon-lite/ait-stub:latest")
+    r = ait.run(ait_stub)
 
     assert re.match(r"^\d{8}-\d{6}-\d{6}_[0-9a-f]{10}$", r.run_id)
     assert r.core.output_base_dir_path == tmp_path / r.run_id
     assert r.core.output_dir_path == tmp_path / r.run_id / "-/-"
-    assert r.core.ait_output_json_dict()["AIT"]["Name"] == "ait-stub"
-    assert r.core.ait_output_json_dict()["AIT"]["Version"] == "latest"
+    assert r.core.ait_output_json_dict["AIT"]["Name"] == "ait-stub"
+    assert r.core.ait_output_json_dict["AIT"]["Version"] == "latest"
 
 
-@pytest.mark.usefixtures("build_image_for_ait_stub")
 def test_run_full_option(
     mocker: MockerFixture,
     tmp_path: pathlib.Path,
     shared_datadir: pathlib.Path,
+    ait_stub: str,
 ):
     mocker.patch.object(ait, "OUTPUT_ROOT_DIR_PATH", tmp_path)
     mocker.patch.object(ait, "_generate_run_id", return_value="run-id")
 
     r = ait.run(
-        ait="qunomon-lite/ait-stub:latest",
+        ait=ait_stub,
         inventories={"inventory_sample": str(shared_datadir.resolve() / "sample.txt")},
         params={"p1": "ppp1"},
     )
@@ -137,8 +138,8 @@ def test_run_full_option(
     assert r.run_id == "run-id"
     assert r.core.output_base_dir_path == tmp_path / "run-id"
     assert r.core.output_dir_path == tmp_path / "run-id/-/-"
-    assert r.core.ait_output_json_dict()["AIT"]["Name"] == "ait-stub"
-    assert r.core.ait_output_json_dict()["AIT"]["Version"] == "latest"
+    assert r.core.ait_output_json_dict["AIT"]["Name"] == "ait-stub"
+    assert r.core.ait_output_json_dict["AIT"]["Version"] == "latest"
     assert r.core.job_id == "-"
     assert r.core.run_id == "-"
     ait_input_json_expected = {
@@ -159,3 +160,35 @@ def test_run_full_option(
         ait_core._load_json_file(tmp_path / "run-id/ait.input.json")
         == ait_input_json_expected
     )
+
+
+def test_run_execution_error(
+    mocker: MockerFixture,
+    tmp_path: pathlib.Path,
+    ait_stub_for_err: str,
+):
+    mocker.patch.object(ait, "OUTPUT_ROOT_DIR_PATH", tmp_path)
+
+    with pytest.raises(ait_core.AitExecutionError) as e:
+        ait.run(ait_stub_for_err)
+
+    assert (
+        "AIT docker container running succeeded, "
+        + "but AIT execution error occured. "
+        + "Error Code: E901, Error Detail: Traceback (most recent call last):"
+        in str(e.value)
+    )
+
+
+def test_run_docker_error(
+    mocker: MockerFixture,
+    tmp_path: pathlib.Path,
+):
+    mocker.patch.object(ait, "OUTPUT_ROOT_DIR_PATH", tmp_path)
+    mocker.patch.object(
+        ait_core.Runner,
+        "_docker_run",
+        side_effect=docker.errors.APIError("dummy docker api error"),
+    )
+    with pytest.raises(docker.errors.APIError):
+        ait.run("repo/name:ver")
