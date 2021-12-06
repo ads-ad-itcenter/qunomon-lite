@@ -10,3 +10,5 @@ coverage.xml
 .ipynb_checkpoints
 qunomon_lite_outputs
 _tmp_*
+/build/
+/dist/

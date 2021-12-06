@@ -1,6 +1,7 @@
 -e .
 
 tox
+tox-wheel
 pytest
 pytest-datadir
 pytest-mock

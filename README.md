@@ -43,12 +43,21 @@ Note: 当ツールはQunomonを置き換えるものではありません。ユ�
 
 ### Step
 
-PyPIからインストールできます
+~~PyPIからインストールできます~~
+
 
 1. Install
+    <!--
     ```shell
     pip install qunomon-lite
     ```
+    -->
+
+    開発中の最新はGitHubリポジトリからインストールできます
+    ```shell
+    pip install -U git+https://github.com/ads-ad-itcenter/qunomon-lite.git
+    ```
+
 
 ## :rocket: Usage
 
