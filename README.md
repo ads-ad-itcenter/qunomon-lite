@@ -60,8 +60,8 @@ Note: 当ツールはQunomonを置き換えるものではありません。ユ�
 
 ### 使用例:
 
-* CUI: [example/example-cli.md](https://github.com/ads-ad-itcenter/qunomon-lite/blob/main/example/example-cli.md)
-* Python: [example/example-notebook.ipynb](https://github.com/ads-ad-itcenter/qunomon-lite/blob/main/example/example-notebook.ipynb)
+* CUI: [examples/example-cli.md](https://github.com/ads-ad-itcenter/qunomon-lite/blob/main/examples/example-cli.md)
+* Python: [examples/example-notebook.ipynb](https://github.com/ads-ad-itcenter/qunomon-lite/blob/main/examples/example-notebook.ipynb)
 
 ### AITの実行（パブリックAIT）
 
