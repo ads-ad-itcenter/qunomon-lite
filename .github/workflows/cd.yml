@@ -1,6 +1,9 @@
 name: CD
 
 on:
+  release:
+    types:
+      - published
   workflow_dispatch:
     branches:
       - main
@@ -18,6 +21,16 @@ jobs:
 
       - run: |
           python -m pip install -U pip
-          pip install setup.py bdist_wheel
+          pip install -U setuptools wheel twine
 
       - run: python setup.py bdist_wheel
+
+      # - run: twine upload --repository testpypi dist/*
+      #   env:
+      #     TWINE_USERNAME: __token__
+      #     TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}
+
+      - run: twine upload dist/*
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}

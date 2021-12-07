@@ -2,7 +2,7 @@
 
 [Qunomon](https://aistairc.github.io/qunomon/)およびAIT(AI system Test package)の簡易利用ツール
 
-## :pushpin: Description
+## 📌 Description
 
 [Qunomon](https://aistairc.github.io/qunomon/)が提供する一部の機能を簡易的に利用できる、コマンドライン・Pythonツールです。
 Qunomonを起動することなくAIT(AI system Test package)を実行することができます。
@@ -14,26 +14,26 @@ Qunomonを起動することなくAIT(AI system Test package)を実行するこ�
 Note: 当ツールはQunomonを置き換えるものではありません。ユースケースによって、Qunomonの利用を検討ください。
 
 
-## :white_check_mark: Features
+## ✅ Features
 
 「AITの実行」や「AITの実行結果表示」に関して、より柔軟な使い方を実現する機能を提供します。
 
 ### 機能a. AITの実行
 
-* [x] ローカル環境（Docker）でAIT実行
-* [x] パブリックAITの利用
-* [ ] プライベートAITの利用
+* ✅ ローカル環境（Docker）でAIT実行
+* ✅ パブリックAITの利用
+* ⬛ プライベートAITの利用
 
 ### 機能b. AITの実行結果表示
 
-* [x] AITローカル実行結果の閲覧
-* [ ] AITローカル実行結果の測定値（Measures）の取得
-* [ ] AITローカル実行結果の一覧
+* ✅ AITローカル実行結果の閲覧
+* ⬛ AITローカル実行結果の測定値（Measures）の取得
+* ⬛ AITローカル実行結果の一覧
 
 
 ---
 
-## :floppy_disk: Install
+## 💾 Install
 
 ### Requirements
 
@@ -43,15 +43,12 @@ Note: 当ツールはQunomonを置き換えるものではありません。ユ�
 
 ### Step
 
-~~PyPIからインストールできます~~
-
 
 1. Install
-    <!--
+
     ```shell
     pip install qunomon-lite
     ```
-    -->
 
     開発中の最新はGitHubリポジトリからインストールできます
     ```shell
@@ -59,7 +56,12 @@ Note: 当ツールはQunomonを置き換えるものではありません。ユ�
     ```
 
 
-## :rocket: Usage
+## 🚀 Usage
+
+### 使用例:
+
+* CUI: [example/example-cli.md](https://github.com/ads-ad-itcenter/qunomon-lite/blob/main/example/example-cli.md)
+* Python: [example/example-notebook.ipynb](https://github.com/ads-ad-itcenter/qunomon-lite/blob/main/example/example-notebook.ipynb)
 
 ### AITの実行（パブリックAIT）
 
@@ -107,14 +109,10 @@ Note: 当ツールはQunomonを置き換えるものではありません。ユ�
       ```
 
 
-## :information_source: Anything else
+## ℹ️ Anything else
 
 ***...TBD...***
 
-## :pencil: Author
+## 📋 LICENCE
 
-***...TBD...***
-
-## :clipboard: LICENCE
-
-[Apache License 2.0](LICENSE)
+[Apache License 2.0](https://github.com/ads-ad-itcenter/qunomon-lite/blob/main/LICENSE)
