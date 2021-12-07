@@ -5,18 +5,26 @@ on:
     branches:
       - main
     paths:
-      - "src/**"
-      - "tests/**"
-      - "!.**"
-      - "!*.md"
+      - "**"
+      - "!.github/**"
+      - "!.vscode/**"
+      - "!example/**"
+      - "!.editorconfig"
+      - "!.env"
+      - "!.gitignore"
+      - "!LICENSE"
   pull_request:
     branches:
       - main
     paths:
-      - "src/**"
-      - "tests/**"
-      - "!.**"
-      - "!*.md"
+      - "**"
+      - "!.github/**"
+      - "!.vscode/**"
+      - "!example/**"
+      - "!.editorconfig"
+      - "!.env"
+      - "!.gitignore"
+      - "!LICENSE"
   workflow_dispatch:
 
 jobs:
