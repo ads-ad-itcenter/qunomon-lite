@@ -38,7 +38,8 @@ Note: 当ツールはQunomonを置き換えるものではありません。ユ�
 ### Requirements
 
 * docker
-* python, pip
+  * sudo無しでdockerコマンドが実行できること
+* python 3.x, pip
 
 
 ### Step
@@ -111,7 +112,40 @@ Note: 当ツールはQunomonを置き換えるものではありません。ユ�
 
 ## ℹ️ Anything else
 
-***...TBD...***
+
+### Troubleshooting
+
+#### qunomon-liteコマンドが見つからない（command not found）
+
+```shell
+$ qunomon-lite --help
+qunomon-lite: command not found
+```
+
+Debianパッケージのpipコマンド（python3-pip）は、一般ユーザで`pip install`すると、デフォルトで`~/.local` にインストールされるようです（`--user`オプションが自動で付与）。
+そのため、Debian系のOS（Debian, Ubuntu,,,）で、各OSパッケージのpipを利用している場合（例. `sudo apt install python3-pip` ）は、`~/.local/bin`にPATHを通してみてください。
+
+```shell
+# for example...
+$ export PATH="$HOME/.local/bin:$PATH"
+```
+
+#### AIT実行でPermissionErrorが発生（Permission denied）
+
+```shell
+$ qunomon-lite run qunomon/eval_mnist_acc_tf2.3:0.1 ...
+
+...
+Running docker container (image: qunomon/eval_mnist_acc_tf2.3:0.1) ...
+Error while fetching server API version: ('Connection aborted.', PermissionError(13, 'Permission denied'))
+```
+
+当ツール・パッケージを利用するには、実行ユーザーが、sudoせずにdockerコマンドが利用できる必要があります。
+
+```shell
+# for example...
+$ sudo usermod -aG docker $USER
+```
 
 ## 📋 LICENCE
 
